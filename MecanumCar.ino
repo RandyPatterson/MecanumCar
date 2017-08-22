@@ -1,12 +1,19 @@
-//#define DEBUG
+#define DEBUG
 
 #define FORWARD = 0x1;
 #define REVERSE = 0x0;
+
 
 byte CH1_PIN = A0;
 byte CH2_PIN = A1;
 byte CH3_PIN = A2;
 byte CH4_PIN = A3;
+
+
+int CH1_DATA ;
+int CH2_DATA ;
+int CH3_DATA ;
+int CH4_DATA ;
 
 byte T_PIN = 3; 
 
@@ -18,6 +25,9 @@ byte RR_DIR[] = { 6,5 }; //Right Rear
 byte RF_DIR[] = { 8,7 }; //Right Front 
 byte LF_DIR[] = { 12,11 }; //Left Front
 byte LR_DIR[] = { 13,4 }; //Left Rear
+
+
+
 
 void setup() {
   pinMode(CH1_PIN, INPUT);
@@ -43,18 +53,28 @@ void setup() {
   
   #if defined(DEBUG)
 	Serial.begin(115200);
+  Serial.println("Waiting for controller to connect");
   #endif
 
+  //Wait for data channel to NOT timeout
+	while(pulseIn(CH1_PIN, HIGH) == 0){
+	}
+
+
+#if defined(DEBUG)
+  Serial.println("Controller connected. Waiting to center joysticks");
+#endif
+
+  readData();
+  while(CH3_DATA != 0x0) {
+    readData();
+  }
 }
 
 void loop() {
   digitalWrite(T_PIN, !digitalRead(T_PIN)); //Toggle pin for loop timming
   
-  int CH1_DATA = map(pulseIn(CH1_PIN, HIGH),995,1970,-25,25);
-  int CH2_DATA = map(pulseIn(CH2_PIN, HIGH),995,1970,-25,25);
-  int CH3_DATA = map(pulseIn(CH3_PIN, HIGH),995,1970,-25,25);
-  int CH4_DATA = map(pulseIn(CH4_PIN, HIGH),995,1970,-25,25);
-
+  readData();
   
   if (abs(CH4_DATA) > 14) {
 	//rotate wheels in oposite directions 
@@ -96,11 +116,12 @@ void loop() {
 		Serial.print(CH3_DATA);
 		Serial.print(" CH4:");
 		Serial.print(CH4_DATA);
+
+    Serial.println();
 	#endif
 
-	#if defined(DEBUG)
-		Serial.println();
-	#endif
+
+	
  }
 
 
@@ -108,11 +129,12 @@ void loop() {
 void setSpeed(byte motorSpeedPin, int speed) {
 
 	speed = abs(speed);
-
 	if (speed >= 25)
 		speed = 255;
-	else
+	else if (speed > 6) //0-6 is dead zone, too slow for motor to engage
 		speed = speed * 10;
+  else
+   speed = 0;
 
 	analogWrite(motorSpeedPin, speed);
   
@@ -127,4 +149,13 @@ void setDirection(byte pin[], int channelData) {
 	digitalWrite(pin[0], channelData > 0);
 	digitalWrite(pin[1], channelData < 0);
   }
+
+
+
+ void readData() {
+  CH1_DATA = map(pulseIn(CH1_PIN, HIGH),995,1970,-25,25);
+  CH2_DATA = map(pulseIn(CH2_PIN, HIGH),995,1970,-25,25);
+  CH3_DATA = map(pulseIn(CH3_PIN, HIGH),995,1970,-25,25);
+  CH4_DATA = map(pulseIn(CH4_PIN, HIGH),995,1970,-25,25);
+}
 
