@@ -78,31 +78,31 @@ void loop() {
   
   readData();
   
-  if (abs(CH1_DATA) > 14) { //slide
+  if (abs(CH4_DATA) > 14) { //slide
 	//rotate wheels in oposite directions 
-	setSpeed(RightSpeed_PIN, CH1_DATA);
-	setDirection(RR_DIR, CH1_DATA);
-	setDirection(RF_DIR, CH1_DATA*-1);
+	setSpeed(RightSpeed_PIN, CH4_DATA);
+	setDirection(RR_DIR, CH4_DATA*-1);
+	setDirection(RF_DIR, CH4_DATA);
  
   }
   else {
-	setSpeed(RightSpeed_PIN, CH3_DATA);
-	setDirection(RR_DIR, CH3_DATA);
-	setDirection(RF_DIR, CH3_DATA);
+	setSpeed(RightSpeed_PIN, CH2_DATA);
+	setDirection(RR_DIR, CH2_DATA);
+	setDirection(RF_DIR, CH2_DATA);
  }
 
   
-  if (abs(CH4_DATA) > 14) { //slide
+  if (abs(CH1_DATA) > 14) { //slide
 	//rotate wheels in oposite directions 
-	setSpeed(LeftSpeed_PIN, CH4_DATA);
-	setDirection(LR_DIR, CH4_DATA*-1);
-	setDirection(LF_DIR, CH4_DATA);
+	setSpeed(LeftSpeed_PIN, CH1_DATA);
+	setDirection(LR_DIR, CH1_DATA);
+	setDirection(LF_DIR, CH1_DATA*-1);
 
   }
   else {
-	setSpeed(LeftSpeed_PIN, CH2_DATA);
-	setDirection(LR_DIR, CH2_DATA);
-	setDirection(LF_DIR, CH2_DATA);
+	setSpeed(LeftSpeed_PIN, CH3_DATA);
+	setDirection(LR_DIR, CH3_DATA);
+	setDirection(LF_DIR, CH3_DATA);
 	
   }
   
